@@ -31,10 +31,12 @@
 
 package com.raywenderlich.android.w00tze.app
 
+import com.raywenderlich.android.w00tze.repository.BasicRepository
 import com.raywenderlich.android.w00tze.repository.Repository
 import com.raywenderlich.android.w00tze.repository.StubRepository
 
 
 object Injection {
-  fun provideRepository(): Repository = StubRepository
+  fun provideRepository(): Repository = BasicRepository
+//  fun provideRepository(): Repository = StubRepository
 }
