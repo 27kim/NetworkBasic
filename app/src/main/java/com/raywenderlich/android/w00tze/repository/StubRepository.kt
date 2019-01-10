@@ -33,12 +33,16 @@ package com.raywenderlich.android.w00tze.repository
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
+import com.raywenderlich.android.w00tze.model.Either
 import com.raywenderlich.android.w00tze.model.Gist
 import com.raywenderlich.android.w00tze.model.Repo
 import com.raywenderlich.android.w00tze.model.User
 
 
 object StubRepository : Repository {
+  override fun getUser(): LiveData<Either<User>> {
+    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+  }
 
   override fun getRepos(): LiveData<List<Repo>> {
     val liveData = MutableLiveData<List<Repo>>()
@@ -57,29 +61,29 @@ object StubRepository : Repository {
   override fun getGists(): LiveData<List<Gist>> {
     val liveData = MutableLiveData<List<Gist>>()
     val gists = mutableListOf<Gist>()
-
-    for (i in 0 until 100) {
-      val gist = Gist("2018-02-23T17:42:52Z", "w00t")
-      gists.add(gist)
-    }
-
-    liveData.value = gists
-
-    return liveData
-  }
-
-  override fun getUser(): LiveData<User> {
-    val liveData = MutableLiveData<User>()
-
-    val user = User(
-        1234L,
-        "w00tze",
-        "w00tze",
-        "W00tzeWootze",
-        "https://avatars0.githubusercontent.com/u/36771440?v=4")
-
-    liveData.value = user
+//
+//    for (i in 0 until 100) {
+//      val gist = Gist("2018-02-23T17:42:52Z", "w00t")
+//      gists.add(gist)
+//    }
+//
+//    liveData.value = gists
 
     return liveData
   }
+
+//  override fun getUser(): LiveData<User> {
+//    val liveData = MutableLiveData<User>()
+//
+//    val user = User(
+//        1234L,
+//        "w00tze",
+//        "w00tze",
+//        "W00tzeWootze",
+//        "https://avatars0.githubusercontent.com/u/36771440?v=4")
+//
+//    liveData.value = user
+//
+//    return liveData
+//  }
 }

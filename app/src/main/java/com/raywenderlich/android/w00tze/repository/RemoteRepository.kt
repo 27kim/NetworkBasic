@@ -37,15 +37,16 @@ import android.net.Uri
 import android.os.AsyncTask
 import android.util.Log
 import com.raywenderlich.android.w00tze.app.Constants.fullUrlString
+import com.raywenderlich.android.w00tze.app.Injection
 import com.raywenderlich.android.w00tze.app.isNullorBlankorNullString
-import com.raywenderlich.android.w00tze.model.Gist
-import com.raywenderlich.android.w00tze.model.Repo
-import com.raywenderlich.android.w00tze.model.User
+import com.raywenderlich.android.w00tze.model.*
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.IOException
-
 
 object RemoteRepository : Repository {
 
@@ -53,26 +54,59 @@ object RemoteRepository : Repository {
 
     private const val LOGIN = "27kim"
 
+    private val api = Injection.provideGitHubApi()
+
     override fun getRepos(): LiveData<List<Repo>> {
         val liveData = MutableLiveData<List<Repo>>()
 
+        //1. AsyncTask 로 호출
 //        FetchReposAsyncTask({ repos ->
 //            liveData.value = repos
 //        }).execute()
 
-        FetchAsyncTask("/users/${LOGIN}/repos", ::parseRepos ,{ repos ->
-                        liveData.value = repos
-        }).execute()
+        //2. FetchAsync 로 통합
+//        FetchAsyncTask("/users/${LOGIN}/repos", ::parseRepos ,{ repos ->
+//                        liveData.value = repos
+//        }).execute()
+
+        //3.Retrofit 사용
+        api.getRepos(LOGIN).enqueue(object : Callback<List<Repo>> {
+            override fun onResponse(call: Call<List<Repo>>, response: Response<List<Repo>>?) {
+              if(response != null){
+                  liveData.value = response.body()
+              }
+            }
+
+            override fun onFailure(call: Call<List<Repo>>, t: Throwable) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+        })
         return liveData
     }
 
     override fun getGists(): LiveData<List<Gist>> {
         val liveData = MutableLiveData<List<Gist>>()
 
-        FetchAsyncTask("/users/${LOGIN}/gists", ::parseGists ,{ gists ->
-            liveData.value = gists
-        }).execute()
-        return liveData
+        //3.Retrofit 사용
+        api.getGists(LOGIN).enqueue(object : Callback<List<Gist>> {
+            override fun onResponse(call: Call<List<Gist>>, response: Response<List<Gist>>) {
+                liveData.value = response.body()
+            }
+
+            override fun onFailure(call: Call<List<Gist>>, t: Throwable) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+        })
+
+        //1. FetchAsyncTask 로 통합
+//        FetchAsyncTask("/users/${LOGIN}/gists", ::parseGists ,{ gists ->
+//            liveData.value = gists
+//        }).execute()
+//        return liveData
+
+        //1. AsyncTask 로 호출
 //        FetchGistsAsyncTask({ gists ->
 //            liveData.value = gists
 //        }).execute()
@@ -80,24 +114,32 @@ object RemoteRepository : Repository {
         return liveData
     }
 
-    override fun getUser(): LiveData<User> {
-        val liveData = MutableLiveData<User>()
+    override fun getUser(): LiveData<Either<User>> {
+        val liveData = MutableLiveData<Either<User>>()
 
-        FetchUserAsyncTask { liveData.value = it }.execute()
+        //3.Retrofit 사용
+        api.getUser(LOGIN).enqueue(object : Callback<User>{
+            override fun onResponse(call: Call<User>, response: Response<User>) {
+                if(response !=null  && response.isSuccessful) {
+                    liveData.value = Either.success(response.body())
+                }else{
+                    liveData.value = Either.error(ApiError.USER, null)
+                }
+            }
 
-        FetchAsyncTask("/users/${LOGIN}", ::parseUser ,{ user ->
-            liveData.value = user
-        }).execute()
+            override fun onFailure(call: Call<User>, t: Throwable) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
 
-
-//        val user = User(
-//                1234L,
-//                "w00tze",
-//                "w00tze",
-//                "W00tzeWootze",
-//                "https://avatars0.githubusercontent.com/u/36771440?v=4")
+        })
+//        //1. AsyncTask 로 호출
+//        FetchUserAsyncTask { liveData.value = it }.execute()
 //
-//        liveData.value = user
+//        //2. FetchAsync로 통합
+//        FetchAsyncTask("/users/${LOGIN}", ::parseUser ,{ user ->
+//            liveData.value = user
+//        }).execute()
+
 
         return liveData
     }
@@ -239,13 +281,13 @@ object RemoteRepository : Repository {
     private fun parseGists(jsonString: String): List<Gist> {
         val gists = mutableListOf<Gist>()
 
-        val gistsArray = JSONArray(jsonString)
-
-        for (i in 0 until gistsArray.length()) {
-            val jsonObject = gistsArray.getJSONObject(i)
-            val gist = Gist(jsonObject.getString("created_at"), jsonObject.getString("description"))
-            gists.add(gist)
-        }
+//        val gistsArray = JSONArray(jsonString)
+//
+//        for (i in 0 until gistsArray.length()) {
+//            val jsonObject = gistsArray.getJSONObject(i)
+//            val gist = Gist(jsonObject.getString("created_at"), jsonObject.getString("description"))
+//            gists.add(gist)
+//        }
 
         return gists
     }

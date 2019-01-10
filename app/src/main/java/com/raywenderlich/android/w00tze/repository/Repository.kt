@@ -32,6 +32,7 @@
 package com.raywenderlich.android.w00tze.repository
 
 import android.arch.lifecycle.LiveData
+import com.raywenderlich.android.w00tze.model.Either
 import com.raywenderlich.android.w00tze.model.Gist
 import com.raywenderlich.android.w00tze.model.Repo
 import com.raywenderlich.android.w00tze.model.User
@@ -39,6 +40,6 @@ import com.raywenderlich.android.w00tze.model.User
 interface Repository {
   fun getRepos(): LiveData<List<Repo>>
   fun getGists(): LiveData<List<Gist>>
-  fun getUser(): LiveData<User>
+  fun getUser(): LiveData<Either<User>>
 }
 

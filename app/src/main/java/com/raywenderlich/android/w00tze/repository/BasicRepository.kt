@@ -38,6 +38,7 @@ import android.os.AsyncTask
 import android.util.Log
 import com.raywenderlich.android.w00tze.app.Constants.fullUrlString
 import com.raywenderlich.android.w00tze.app.isNullorBlankorNullString
+import com.raywenderlich.android.w00tze.model.Either
 import com.raywenderlich.android.w00tze.model.Gist
 import com.raywenderlich.android.w00tze.model.Repo
 import com.raywenderlich.android.w00tze.model.User
@@ -48,6 +49,9 @@ import java.io.IOException
 
 
 object BasicRepository : Repository {
+    override fun getUser(): LiveData<Either<User>> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     private const val TAG = "BasicRepository"
 
@@ -60,8 +64,8 @@ object BasicRepository : Repository {
 //            liveData.value = repos
 //        }).execute()
 
-        FetchAsyncTask("/users/${LOGIN}/repos", ::parseRepos ,{ repos ->
-                        liveData.value = repos
+        FetchAsyncTask("/users/${LOGIN}/repos", ::parseRepos, { repos ->
+            liveData.value = repos
         }).execute()
         return liveData
     }
@@ -69,7 +73,7 @@ object BasicRepository : Repository {
     override fun getGists(): LiveData<List<Gist>> {
         val liveData = MutableLiveData<List<Gist>>()
 
-        FetchAsyncTask("/users/${LOGIN}/gists", ::parseGists ,{ gists ->
+        FetchAsyncTask("/users/${LOGIN}/gists", ::parseGists, { gists ->
             liveData.value = gists
         }).execute()
         return liveData
@@ -80,27 +84,27 @@ object BasicRepository : Repository {
         return liveData
     }
 
-    override fun getUser(): LiveData<User> {
-        val liveData = MutableLiveData<User>()
-
-        FetchUserAsyncTask { liveData.value = it }.execute()
-
-        FetchAsyncTask("/users/${LOGIN}", ::parseUser ,{ user ->
-            liveData.value = user
-        }).execute()
-
-
-//        val user = User(
-//                1234L,
-//                "w00tze",
-//                "w00tze",
-//                "W00tzeWootze",
-//                "https://avatars0.githubusercontent.com/u/36771440?v=4")
+//    override fun getUser(): LiveData<User> {
+//        val liveData = MutableLiveData<User>()
 //
-//        liveData.value = user
-
-        return liveData
-    }
+//        FetchUserAsyncTask { liveData.value = it }.execute()
+//
+//        FetchAsyncTask("/users/${LOGIN}", ::parseUser, { user ->
+//            liveData.value = user
+//        }).execute()
+//
+//
+////        val user = User(
+////                1234L,
+////                "w00tze",
+////                "w00tze",
+////                "W00tzeWootze",
+////                "https://avatars0.githubusercontent.com/u/36771440?v=4")
+////
+////        liveData.value = user
+//
+//        return liveData
+//    }
 
     private fun fetchRepos(): List<Repo>? {
         try {
@@ -178,7 +182,7 @@ object BasicRepository : Repository {
         override fun onPostExecute(result: T) {
             super.onPostExecute(result)
 
-            if(result !=null){
+            if (result != null) {
                 callback(result)
             }
         }
@@ -239,13 +243,13 @@ object BasicRepository : Repository {
     private fun parseGists(jsonString: String): List<Gist> {
         val gists = mutableListOf<Gist>()
 
-        val gistsArray = JSONArray(jsonString)
-
-        for (i in 0 until gistsArray.length()) {
-            val jsonObject = gistsArray.getJSONObject(i)
-            val gist = Gist(jsonObject.getString("created_at"), jsonObject.getString("description"))
-            gists.add(gist)
-        }
+//        val gistsArray = JSONArray(jsonString)
+//
+//        for (i in 0 until gistsArray.length()) {
+//            val jsonObject = gistsArray.getJSONObject(i)
+//            val gist = Gist(jsonObject.getString("created_at"), jsonObject.getString("description"))
+//            gists.add(gist)
+//        }
 
         return gists
     }
