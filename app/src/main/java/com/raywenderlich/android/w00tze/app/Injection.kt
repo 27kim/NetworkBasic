@@ -32,11 +32,21 @@
 package com.raywenderlich.android.w00tze.app
 
 import com.raywenderlich.android.w00tze.repository.BasicRepository
+import com.raywenderlich.android.w00tze.repository.RemoteRepository
 import com.raywenderlich.android.w00tze.repository.Repository
 import com.raywenderlich.android.w00tze.repository.StubRepository
+import retrofit2.Retrofit
 
 
 object Injection {
-  fun provideRepository(): Repository = BasicRepository
+  fun provideRepository(): Repository = RemoteRepository
+//  fun provideRepository(): Repository = BasicRepository
 //  fun provideRepository(): Repository = StubRepository
+
+  fun provideRetrofit() : Retrofit{
+    return Retrofit.Builder()
+            .baseUrl("https://api.github.com")
+            .build()
+  }
 }
+

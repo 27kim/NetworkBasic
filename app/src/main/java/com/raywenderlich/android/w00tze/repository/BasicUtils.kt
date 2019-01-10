@@ -2,6 +2,7 @@ package com.raywenderlich.android.w00tze.repository
 
 import com.raywenderlich.android.w00tze.model.Gist
 import com.raywenderlich.android.w00tze.model.Repo
+import com.raywenderlich.android.w00tze.model.User
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
@@ -16,17 +17,21 @@ import javax.net.ssl.HttpsURLConnection
 internal typealias ReposCallback = (repos: List<Repo>) -> Unit
 
 internal typealias GistsCallback = (repos: List<Gist>) -> Unit
+internal typealias UserCallback = (repos: User) -> Unit
 
 @Throws(IOException::class)
 internal fun getUrlAsString(urlAddress: String): String {
     val url = URL(urlAddress)
 
+    //only creates an Object
     val conn = url.openConnection() as HttpsURLConnection
 
     conn.requestMethod = "GET"
     conn.setRequestProperty("Accept", "application/json")
 
     return try {
+
+        //connect() method is invoked by conn.getInputStream();
         val inputStream = conn.inputStream
 
         if (conn.responseCode != HttpsURLConnection.HTTP_OK) {

@@ -47,9 +47,9 @@ import org.json.JSONObject
 import java.io.IOException
 
 
-object BasicRepository : Repository {
+object RemoteRepository : Repository {
 
-    private const val TAG = "BasicRepository"
+    private const val TAG = "RemoteRepository"
 
     private const val LOGIN = "27kim"
 
