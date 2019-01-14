@@ -33,12 +33,24 @@ package com.raywenderlich.android.w00tze.viewmodel
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
+import android.arch.lifecycle.LiveData
 import com.raywenderlich.android.w00tze.app.Injection
-
+import com.raywenderlich.android.w00tze.model.Either
+import com.raywenderlich.android.w00tze.model.Gist
+import com.raywenderlich.android.w00tze.model.GistFile
+import com.raywenderlich.android.w00tze.model.GistRequest
 
 class GistsViewModel(application: Application) : AndroidViewModel(application) {
   private val repository = Injection.provideRepository()
   private val allGists = repository.getGists()
 
   fun getGists() = allGists
+
+  fun sendGist(description: String, filename: String, content: String): LiveData<Either<Gist>> {
+    val gistFile = GistFile(content)
+    val gistFiles = mapOf(filename to gistFile)
+    val request = GistRequest(gistFiles)
+
+    return repository.postGist(request)
+  }
 }

@@ -32,9 +32,4 @@
 package com.raywenderlich.android.w00tze.model
 
 
-enum class ApiError {
-  REPO,
-  GIST,
-  USER,
-  POST_GIST
-}
+class GistRequest(val files: Map<String, GistFile>, val public: Boolean = true)

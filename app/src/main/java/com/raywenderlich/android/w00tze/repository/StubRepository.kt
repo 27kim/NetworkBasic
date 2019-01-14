@@ -38,6 +38,7 @@ import com.raywenderlich.android.w00tze.model.Gist
 import com.raywenderlich.android.w00tze.model.Repo
 import com.raywenderlich.android.w00tze.model.User
 
+/*
 
 object StubRepository : Repository {
   override fun getUser(): LiveData<Either<User>> {
@@ -87,3 +88,4 @@ object StubRepository : Repository {
 //    return liveData
 //  }
 }
+*/

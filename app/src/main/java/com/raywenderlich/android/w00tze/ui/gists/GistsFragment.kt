@@ -40,8 +40,12 @@ import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.raywenderlich.android.w00tze.R
+import com.raywenderlich.android.w00tze.model.ApiError
+import com.raywenderlich.android.w00tze.model.Either
 import com.raywenderlich.android.w00tze.model.Gist
+import com.raywenderlich.android.w00tze.model.Status
 import com.raywenderlich.android.w00tze.viewmodel.GistsViewModel
 import kotlinx.android.synthetic.main.fragment_gists.*
 
@@ -69,8 +73,14 @@ class GistsFragment : Fragment(), GistAdapter.GistAdapterListener {
     val itemTouchHelper = ItemTouchHelper(ItemTouchHelperCallback(adapter))
     itemTouchHelper.attachToRecyclerView(gistsRecyclerView)
 
-    gistsViewModel.getGists().observe(this, Observer<List<Gist>> { gists ->
-      adapter.updateGists(gists ?: emptyList())
+    gistsViewModel.getGists().observe(this, Observer<Either<List<Gist>>> { either ->
+      if (either?.status == Status.SUCCESS && either.data != null) {
+        adapter.updateGists(either.data)
+      } else {
+        if (either?.error == ApiError.REPO) {
+          Toast.makeText(context, getString(R.string.error_retrieving_repo), Toast.LENGTH_SHORT).show()
+        }
+      }
     })
 
     fab.setOnClickListener {
@@ -83,6 +93,14 @@ class GistsFragment : Fragment(), GistAdapter.GistAdapterListener {
   }
 
   internal fun sendGist(description: String, filename: String, content: String) {
-    println("Sending gist: $description - $filename - $content")
+    gistsViewModel.sendGist(description, filename, content).observe(this, Observer<Either<Gist>> { either ->
+      if (either?.status == Status.SUCCESS && either.data != null) {
+        adapter.addGist(either.data)
+      } else {
+        if (either?.error == ApiError.POST_GIST) {
+          Toast.makeText(context, getString(R.string.error_posting_gist), Toast.LENGTH_SHORT).show()
+        }
+      }
+    })
   }
 }

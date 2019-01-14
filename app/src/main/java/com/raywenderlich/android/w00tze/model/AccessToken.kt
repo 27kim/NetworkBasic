@@ -31,10 +31,9 @@
 
 package com.raywenderlich.android.w00tze.model
 
+import com.google.gson.annotations.SerializedName
 
-enum class ApiError {
-  REPO,
-  GIST,
-  USER,
-  POST_GIST
-}
+
+class AccessToken(
+    @SerializedName("access_token") val accessToken: String,
+    @SerializedName("token_type") val tokenType: String)

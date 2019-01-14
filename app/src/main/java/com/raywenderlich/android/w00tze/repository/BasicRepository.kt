@@ -47,6 +47,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 
+/*
 
 object BasicRepository : Repository {
     override fun getUser(): LiveData<Either<User>> {
@@ -274,3 +275,4 @@ object BasicRepository : Repository {
         )
     }
 }
+*/

@@ -32,6 +32,7 @@
 package com.raywenderlich.android.w00tze.app
 
 import com.raywenderlich.android.w00tze.BuildConfig
+import com.raywenderlich.android.w00tze.model.AuthenticationPrefs
 import com.raywenderlich.android.w00tze.repository.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -59,7 +60,11 @@ object Injection {
     val httpClient = OkHttpClient.Builder()
 
     httpClient.addInterceptor(provideLoggingInterceptor())
-
+  httpClient.addInterceptor{
+    chain ->
+    val request = chain.request().newBuilder().addHeader("Authorization", "token ${AuthenticationPrefs.getAuthToken()}").build()
+    chain.proceed(request)
+  }
     return httpClient.build()
   }
 
@@ -73,6 +78,18 @@ object Injection {
 
   fun provideGitHubApi() : GitHubApi{
     return provideRetrofit().create(GitHubApi::class.java)
+  }
+
+  private fun provideAuthRetrofit() : Retrofit {
+    return Retrofit.Builder()
+            .baseUrl("https://github.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(provideOkHttpClient())
+            .build()
+  }
+
+  fun provideAuthApi() : AuthApi{
+    return provideAuthRetrofit().create(AuthApi::class.java)
   }
 }
 

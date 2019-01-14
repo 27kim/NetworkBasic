@@ -50,14 +50,15 @@ import java.io.IOException
 
 object RemoteRepository : Repository {
 
+    //    private const val LOGIN = "27kim123"
     private const val TAG = "RemoteRepository"
 
-    private const val LOGIN = "27kim"
+    private val LOGIN = AuthenticationPrefs.getUsername()
 
     private val api = Injection.provideGitHubApi()
 
-    override fun getRepos(): LiveData<List<Repo>> {
-        val liveData = MutableLiveData<List<Repo>>()
+    override fun getRepos(): LiveData<Either<List<Repo>>> {
+        val liveData = MutableLiveData<Either<List<Repo>>>()
 
         //1. AsyncTask 로 호출
 //        FetchReposAsyncTask({ repos ->
@@ -73,29 +74,37 @@ object RemoteRepository : Repository {
         api.getRepos(LOGIN).enqueue(object : Callback<List<Repo>> {
             override fun onResponse(call: Call<List<Repo>>, response: Response<List<Repo>>?) {
               if(response != null){
-                  liveData.value = response.body()
+                  if(response !=null  && response.isSuccessful) {
+                      liveData.value = Either.success(response.body())
+                  }else{
+                      liveData.value = Either.error(ApiError.REPO, null)
+                  }
               }
             }
 
             override fun onFailure(call: Call<List<Repo>>, t: Throwable) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                liveData.value = Either.error(ApiError.REPO, null)
             }
 
         })
         return liveData
     }
 
-    override fun getGists(): LiveData<List<Gist>> {
-        val liveData = MutableLiveData<List<Gist>>()
+    override fun getGists(): LiveData<Either<List<Gist>>> {
+        val liveData = MutableLiveData<Either<List<Gist>>>()
 
         //3.Retrofit 사용
         api.getGists(LOGIN).enqueue(object : Callback<List<Gist>> {
             override fun onResponse(call: Call<List<Gist>>, response: Response<List<Gist>>) {
-                liveData.value = response.body()
+                if(response !=null  && response.isSuccessful) {
+                    liveData.value = Either.success(response.body())
+                }else{
+                    liveData.value = Either.error(ApiError.GIST, null)
+                }
             }
 
             override fun onFailure(call: Call<List<Gist>>, t: Throwable) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                liveData.value = Either.error(ApiError.GIST, null)
             }
 
         })
@@ -310,5 +319,25 @@ object RemoteRepository : Repository {
                 , company
                 , avatar_url
         )
+    }
+
+    override fun postGist(request: GistRequest): LiveData<Either<Gist>> {
+        val liveData = MutableLiveData<Either<Gist>>()
+
+        api.postGist(request).enqueue(object : Callback<Gist> {
+            override fun onResponse(call: Call<Gist>?, response: Response<Gist>?) {
+                if (response != null && response.isSuccessful) {
+                    liveData.value = Either.success(response.body())
+                } else {
+                    liveData.value = Either.error(ApiError.POST_GIST, null)
+                }
+            }
+
+            override fun onFailure(call: Call<Gist>?, t: Throwable?) {
+                liveData.value = Either.error(ApiError.POST_GIST, null)
+            }
+        })
+
+        return liveData
     }
 }

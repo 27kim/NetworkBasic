@@ -83,4 +83,9 @@ class GistAdapter(private val gists: MutableList<Gist>, private val listener: Gi
   interface GistAdapterListener {
     fun deleteGist(gist: Gist)
   }
+
+  fun addGist(gist: Gist) {
+    this.gists.add(0, gist)
+    notifyItemInserted(0)
+  }
 }

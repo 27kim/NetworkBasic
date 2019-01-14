@@ -32,14 +32,13 @@
 package com.raywenderlich.android.w00tze.repository
 
 import android.arch.lifecycle.LiveData
-import com.raywenderlich.android.w00tze.model.Either
-import com.raywenderlich.android.w00tze.model.Gist
-import com.raywenderlich.android.w00tze.model.Repo
-import com.raywenderlich.android.w00tze.model.User
+import com.raywenderlich.android.w00tze.model.*
 
 interface Repository {
-  fun getRepos(): LiveData<List<Repo>>
-  fun getGists(): LiveData<List<Gist>>
+  fun getRepos(): LiveData<Either<List<Repo>>>
+  fun getGists(): LiveData<Either<List<Gist>>>
   fun getUser(): LiveData<Either<User>>
+  fun postGist(request : GistRequest): LiveData<Either<Gist>>
+
 }
 
